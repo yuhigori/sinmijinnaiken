@@ -6,34 +6,53 @@
 
 ### オプション1: Vercel Postgres（推奨）
 
-1. Vercelダッシュボードでプロジェクトを開く
+#### 1. Vercelでデータベースを作成
+
+1. [Vercelダッシュボード](https://vercel.com/dashboard)でプロジェクトを開く
 2. **Storage** タブに移動
 3. **Create Database** → **Postgres** を選択
-4. データベースを作成
-5. 環境変数が自動的に設定されます
+4. データベース名を入力（例：`mujin-naiken-db`）
+5. リージョンを選択（推奨：`Washington, D.C., USA (East)`）
+6. **Create** をクリック
 
-6. ローカルで環境変数を取得：
-```bash
-vercel env pull .env.local
-```
+#### 2. 環境変数を設定
 
-7. Prismaスキーマを更新（`prisma/schema.prisma`）：
+データベース作成後、Vercelが自動的に環境変数を設定しますが、`DATABASE_URL`も追加する必要があります：
+
+1. プロジェクト設定 → **Environment Variables** に移動
+2. 以下の変数を追加：
+   - **Name**: `DATABASE_URL`
+   - **Value**: `POSTGRES_PRISMA_URL`の値をコピー（既に設定されているはず）
+   - **Environment**: Production, Preview, Development すべて選択
+
+#### 3. Prismaスキーマを更新
+
+`prisma/schema.prisma`のdatasourceを以下のように変更：
+
 ```prisma
 datasource db {
   provider = "postgresql"
-  url      = env("POSTGRES_PRISMA_URL")
+  url      = env("DATABASE_URL")
 }
 ```
 
-8. マイグレーションを実行：
+この変更をコミット＆プッシュ：
 ```bash
-npx prisma migrate deploy
+git add prisma/schema.prisma
+git commit -m "Switch to PostgreSQL for production"
+git push
 ```
 
-9. シードデータを投入：
+#### 4. ビルドコマンドを設定
+
+Vercelプロジェクト設定で：
+1. **Settings** → **General** → **Build & Development Settings**
+2. **Build Command** を以下に変更：
 ```bash
-npm run db:seed
+npx prisma migrate deploy && npx prisma db seed && next build
 ```
+
+これでデプロイ時に自動的にマイグレーションとシードが実行されます。
 
 ### オプション2: Turso（SQLite互換）
 
