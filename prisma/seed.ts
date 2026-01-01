@@ -49,37 +49,41 @@ async function main() {
 
     console.log(`Created ${properties.length} properties`);
 
-    // Create viewing slots for the first property (for demonstration)
+    // Create viewing slots for all properties
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    const slots = [];
-    for (let day = 0; day < 7; day++) {
-        const date = new Date(today);
-        date.setDate(date.getDate() + day);
+    const allSlots = [];
 
-        for (let hour = 10; hour < 18; hour++) {
-            const startTime = new Date(date);
-            startTime.setHours(hour, 0, 0, 0);
+    // Create slots for each property
+    for (const property of properties) {
+        for (let day = 0; day < 30; day++) { // 30 days of slots
+            const date = new Date(today);
+            date.setDate(date.getDate() + day);
 
-            const endTime = new Date(date);
-            endTime.setHours(hour + 1, 0, 0, 0);
+            for (let hour = 10; hour < 18; hour++) {
+                const startTime = new Date(date);
+                startTime.setHours(hour, 0, 0, 0);
 
-            slots.push({
-                propertyId: properties[0].id,
-                startTime,
-                endTime,
-                capacity: 1,
-                reservedCount: 0,
-            });
+                const endTime = new Date(date);
+                endTime.setHours(hour + 1, 0, 0, 0);
+
+                allSlots.push({
+                    propertyId: property.id,
+                    startTime,
+                    endTime,
+                    capacity: 1,
+                    reservedCount: 0,
+                });
+            }
         }
     }
 
     await prisma.viewingSlot.createMany({
-        data: slots,
+        data: allSlots,
     });
 
-    console.log(`Created ${slots.length} viewing slots for the first property`);
+    console.log(`Created ${allSlots.length} viewing slots for ${properties.length} properties`);
 
     console.log('Seed completed successfully');
 }
