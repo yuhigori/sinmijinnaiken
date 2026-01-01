@@ -1,7 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { CheckCircle2, Calendar, Clock, MapPin, Home, User, Mail, Phone, Users } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 
@@ -138,12 +137,18 @@ export default async function ReservationConfirmationPage({
 
                 {/* Action Buttons */}
                 <div className="flex flex-col gap-3 sm:flex-row">
-                    <Button asChild className="flex-1" variant="outline">
-                        <Link href="/properties">他の物件を見る</Link>
-                    </Button>
-                    <Button asChild className="flex-1">
-                        <Link href="/">トップページへ</Link>
-                    </Button>
+                    <Link
+                        href="/properties"
+                        className="flex-1 inline-flex items-center justify-center h-10 px-4 py-2 rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-terracotta-500 focus-visible:ring-offset-2 border-2 border-terracotta-500 text-terracotta-500 hover:bg-terracotta-50"
+                    >
+                        他の物件を見る
+                    </Link>
+                    <Link
+                        href="/"
+                        className="flex-1 inline-flex items-center justify-center h-10 px-4 py-2 rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-terracotta-500 focus-visible:ring-offset-2 bg-terracotta-500 text-warm-50 hover:bg-terracotta-600"
+                    >
+                        トップページへ
+                    </Link>
                 </div>
 
                 {/* Important Notice */}
