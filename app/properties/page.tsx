@@ -4,12 +4,15 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from "@/components/ui/button";
 import { MapPin, Home, ArrowRight } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
+import { prisma } from "@/lib/prisma";
 
 async function getProperties() {
     try {
-        const properties = await fetch(`http://localhost:3000/api/properties`, {
-            cache: 'no-store',
-        }).then(res => res.json());
+        const properties = await prisma.property.findMany({
+            orderBy: {
+                createdAt: 'desc',
+            },
+        });
         return properties;
     } catch (error) {
         console.error('Error fetching properties:', error);

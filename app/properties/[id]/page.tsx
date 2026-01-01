@@ -4,14 +4,16 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MapPin, Home, DollarSign } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import { ReservationForm } from "@/components/reservation-form";
+import { prisma } from "@/lib/prisma";
 
 async function getProperty(id: string) {
     try {
-        const res = await fetch(`http://localhost:3000/api/properties`, {
-            cache: 'no-store',
+        const property = await prisma.property.findUnique({
+            where: {
+                id: parseInt(id),
+            },
         });
-        const properties = await res.json();
-        return properties.find((p: any) => p.id === parseInt(id));
+        return property;
     } catch (error) {
         console.error('Error fetching property:', error);
         return null;

@@ -3,14 +3,23 @@ import Link from "next/link";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle2, Calendar, Clock, MapPin, Home, User, Mail, Phone, Users } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
+import { prisma } from "@/lib/prisma";
 
 async function getReservation(token: string) {
     try {
-        const res = await fetch(`http://localhost:3000/api/reservations/${token}`, {
-            cache: 'no-store',
+        const reservation = await prisma.reservation.findUnique({
+            where: {
+                token: token,
+            },
+            include: {
+                slot: {
+                    include: {
+                        property: true,
+                    },
+                },
+            },
         });
-        if (!res.ok) return null;
-        return await res.json();
+        return reservation;
     } catch (error) {
         console.error('Error fetching reservation:', error);
         return null;
@@ -29,8 +38,8 @@ export default async function ReservationConfirmationPage({
         notFound();
     }
 
-    const formatDate = (dateString: string) => {
-        return new Date(dateString).toLocaleDateString("ja-JP", {
+    const formatDate = (date: Date | string) => {
+        return new Date(date).toLocaleDateString("ja-JP", {
             year: "numeric",
             month: "long",
             day: "numeric",
@@ -38,8 +47,8 @@ export default async function ReservationConfirmationPage({
         });
     };
 
-    const formatTime = (dateString: string) => {
-        return new Date(dateString).toLocaleTimeString("ja-JP", {
+    const formatTime = (date: Date | string) => {
+        return new Date(date).toLocaleTimeString("ja-JP", {
             hour: "2-digit",
             minute: "2-digit",
         });
